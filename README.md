@@ -1,16 +1,36 @@
-# Port-Scanner-
-This program is a python port scanner to determine open ports on particular IP addresses. It takes port 1 to 1024 and iteratively checks each port within that range by making connections to each one on the target IP to identify open ports, the ports are outputted when found when the program is running.
+import socket  # Import socket module
 
-The program is made up of two Python functions. scan_ports and scan_port.
+# Second function calling
+def scan_port(target_ip, port):
+    """Attempts to connect to a given port on the target IP."""
+    
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(1)  # Set timeout for connection attempt
+            result = s.connect_ex((target_ip, port))  # Attempt a connection
+            
+            if result == 0:
+                return True  # The port is open
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        
+    return False  # The port is closed
 
-scan_ports:
-- Takes each port one at a time and parses it to scan_port function. 
-- Iterates the port number each iteration.
+# This function is called first.
+def scan_ports(target_ip, start_port, end_port):
+    """Scans a range of ports on the target IP."""
+    print(f"Scanning {target_ip} from port {start_port} to {end_port}...")
+    
+    for port in range(start_port, end_port + 1):
+        if scan_port(target_ip, port): #if the result from the other function is true, say Port is open
+            print(f"Port {port} is open")
+    
+    print("Scanning complete.")
 
-scan_port:
-- Attempts to make a connection to that specific iteration port on the host. 
-- If no connection can be made, port is closed is outputted.
+# Usage
+target = input("Enter target IP address: ")
+scan_ports(target, 1, 1024)  # Scans well-known ports 1-1024 - modify as needed.
 
-Usage:
-- Simply provide an IP address when running the program in the user input and press enter. 
-- The program will then run and output open ports in real time. 
+# Example IP from Shodan:
+# 213.155.225.186
